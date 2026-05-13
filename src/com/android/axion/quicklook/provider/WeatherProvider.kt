@@ -84,6 +84,7 @@ class WeatherProvider(context: Context, workerHandler: Handler) :
                 }
             }
         context.contentResolver.registerContentObserver(WEATHER_URI, true, weatherObserver!!)
+        context.contentResolver.registerContentObserver(SETTINGS_URI, true, weatherObserver!!)
 
         workerHandler.post(::queryAndUpdate)
     }
@@ -183,6 +184,7 @@ class WeatherProvider(context: Context, workerHandler: Handler) :
                 QuickLookAction.Builder("weather_action").setLabel("Weather").setIntent(it).build()
             }
 
+        omniJawsClient.queryWeather(context)
         val iconBytes = loadConditionIconBytes(conditionCode)
 
         currentTarget =
