@@ -27,6 +27,7 @@ import com.android.axion.quicklook.QuickLookAction
 import com.android.axion.quicklook.QuickLookTarget
 import com.android.axion.quicklook.R
 import com.android.axion.quicklook.util.SettingsHelper
+import java.util.concurrent.Executor
 
 class NowPlayingProvider(context: Context, workerHandler: Handler) :
     QuickLookProvider(context, workerHandler) {
@@ -37,11 +38,13 @@ class NowPlayingProvider(context: Context, workerHandler: Handler) :
         notifyUpdate()
     }
 
-    private val listener = object : AxPlatformClient.Listener() {
-        override fun onNowPlayingChanged(action: String, data: Bundle) {
-            workerHandler.post { handleData(action, data) }
+    private val platformExecutor = Executor { command -> workerHandler.post(command) }
+    private val callback =
+        AxPlatformClient.StateCallback { key, state ->
+            if (key == AxPlatformClient.KEY_NOW_PLAYING) {
+                handleData(state.getString("action", ""), state.toBundle())
+            }
         }
-    }
 
     override val providerType
         get() = QuickLookTarget.TYPE_NOW_PLAYING
@@ -61,12 +64,12 @@ class NowPlayingProvider(context: Context, workerHandler: Handler) :
         Log.d(TAG, "start: isEnabled=$isEnabled")
         val client = AxPlatformClient.getInstance()
         client.init(context)
-        client.addListener(listener)
+        client.registerCallback(platformExecutor, callback)
     }
 
     override fun shutdown() {
         workerHandler.removeCallbacks(hideRunnable)
-        AxPlatformClient.getInstance().removeListener(listener)
+        AxPlatformClient.getInstance().unregisterCallback(callback)
     }
 
     private fun handleData(action: String, data: Bundle) {

@@ -21,7 +21,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
+import com.android.axion.platform.AxFeatureState
 import com.android.axion.platform.AxPlatformClient
+import java.util.concurrent.Executor
 import com.android.axion.quicklook.QuickLookTarget
 import com.android.axion.quicklook.R
 import com.android.axion.quicklook.util.SettingsHelper
@@ -33,13 +35,11 @@ class MediaProvider(context: Context, workerHandler: Handler) :
     @Volatile private var currentTarget: QuickLookTarget? = null
     private var pauseTime = 0L
 
-    private val listener = object : AxPlatformClient.Listener() {
-        override fun onStateChanged(key: String, state: Bundle) {
-            if (key == AxPlatformClient.KEY_MEDIA) {
-                workerHandler.post { updateFromBundle(state) }
-            }
+    private val platformExecutor = Executor { command -> workerHandler.post(command) }
+    private val callback =
+        AxPlatformClient.StateCallback { key, state ->
+            if (key == AxPlatformClient.KEY_MEDIA) updateFromState(state)
         }
-    }
 
     override val providerType
         get() = QuickLookTarget.TYPE_MEDIA
@@ -59,80 +59,70 @@ class MediaProvider(context: Context, workerHandler: Handler) :
         Log.d(TAG, "start: isEnabled=$isEnabled")
         val client = AxPlatformClient.getInstance()
         client.init(context)
-        client.addListener(listener)
+        client.registerCallback(platformExecutor, callback)
         workerHandler.post {
-            try {
-                val initial = client.getState(AxPlatformClient.KEY_MEDIA)
-                if (!initial.isEmpty) updateFromBundle(initial)
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to read initial media state", e)
-            }
+            val initial = client.getState(AxPlatformClient.KEY_MEDIA)
+            if (!initial.isEmpty) updateFromState(initial)
         }
     }
 
     override fun shutdown() {
-        AxPlatformClient.getInstance().removeListener(listener)
+        AxPlatformClient.getInstance().unregisterCallback(callback)
     }
 
-    private fun updateFromBundle(bundle: Bundle) {
+    private fun updateFromState(state: AxFeatureState) {
         if (!isEnabled) {
             currentTarget = null
             notifyUpdate()
             return
         }
 
-        try {
-            val track = bundle.getString("track", "")
-            val artist = bundle.getString("artist", "")
-            val album = bundle.getString("album", "")
-            val isPlaying = bundle.getBoolean("isPlaying", false)
-            val packageName = bundle.getString("packageName", "")
+        val track = state.getString("track", "")
+        val artist = state.getString("artist", "")
+        val album = state.getString("album", "")
+        val isPlaying = state.getBoolean("isPlaying", false)
+        val packageName = state.getString("packageName", "")
 
-            if (TextUtils.isEmpty(track)) {
-                currentTarget = null
-                pauseTime = 0
-                notifyUpdate()
-                return
-            }
-
-            if (!isPlaying) {
-                if (pauseTime == 0L) pauseTime = System.currentTimeMillis()
-            } else {
-                pauseTime = 0
-            }
-
-            val extras = Bundle().apply {
-                putString(QuickLookTarget.EXTRA_MEDIA_ARTIST, artist)
-                putString(QuickLookTarget.EXTRA_MEDIA_ALBUM, album)
-                putBoolean(QuickLookTarget.EXTRA_MEDIA_IS_PLAYING, isPlaying)
-                putString(QuickLookTarget.EXTRA_MEDIA_PACKAGE, packageName)
-            }
-
-            val expiryTime = if (!isPlaying && pauseTime > 0) {
-                pauseTime + PAUSE_EXPIRY_MILLIS
-            } else 0L
-
-            val subtitle = when {
-                !TextUtils.isEmpty(artist) -> artist
-                !TextUtils.isEmpty(album) -> album
-                else -> null
-            }
-
-            currentTarget = QuickLookTarget.Builder("axql_media", QuickLookTarget.TYPE_MEDIA)
-                .setTitle(track)
-                .setSubtitle(subtitle)
-                .setIconResId(R.drawable.ic_music_note)
-                .setScore(if (isPlaying) 0.75f else 0.3f)
-                .setExpiryTime(expiryTime)
-                .setExtras(extras)
-                .build()
-
-            notifyUpdate()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse media state", e)
+        if (TextUtils.isEmpty(track)) {
             currentTarget = null
+            pauseTime = 0
             notifyUpdate()
+            return
         }
+
+        if (!isPlaying) {
+            if (pauseTime == 0L) pauseTime = System.currentTimeMillis()
+        } else {
+            pauseTime = 0
+        }
+
+        val extras = Bundle().apply {
+            putString(QuickLookTarget.EXTRA_MEDIA_ARTIST, artist)
+            putString(QuickLookTarget.EXTRA_MEDIA_ALBUM, album)
+            putBoolean(QuickLookTarget.EXTRA_MEDIA_IS_PLAYING, isPlaying)
+            putString(QuickLookTarget.EXTRA_MEDIA_PACKAGE, packageName)
+        }
+
+        val expiryTime = if (!isPlaying && pauseTime > 0) {
+            pauseTime + PAUSE_EXPIRY_MILLIS
+        } else 0L
+
+        val subtitle = when {
+            !TextUtils.isEmpty(artist) -> artist
+            !TextUtils.isEmpty(album) -> album
+            else -> null
+        }
+
+        currentTarget = QuickLookTarget.Builder("axql_media", QuickLookTarget.TYPE_MEDIA)
+            .setTitle(track)
+            .setSubtitle(subtitle)
+            .setIconResId(R.drawable.ic_music_note)
+            .setScore(if (isPlaying) 0.75f else 0.3f)
+            .setExpiryTime(expiryTime)
+            .setExtras(extras)
+            .build()
+
+        notifyUpdate()
     }
 
     companion object {

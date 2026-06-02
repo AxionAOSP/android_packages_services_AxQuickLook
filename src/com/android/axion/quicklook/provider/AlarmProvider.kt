@@ -28,6 +28,7 @@ import com.android.axion.quicklook.util.SettingsHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
 class AlarmProvider(context: Context, workerHandler: Handler) :
@@ -35,11 +36,11 @@ class AlarmProvider(context: Context, workerHandler: Handler) :
 
     @Volatile private var currentTarget: QuickLookTarget? = null
 
-    private val listener = object : AxPlatformClient.Listener() {
-        override fun onAlarmChanged(triggerTime: Long, packageName: String) {
-            workerHandler.post { updateAlarm(triggerTime) }
+    private val platformExecutor = Executor { command -> workerHandler.post(command) }
+    private val callback =
+        AxPlatformClient.StateCallback { key, state ->
+            if (key == AxPlatformClient.KEY_ALARM) updateAlarm(state.getLong("triggerTime", 0L))
         }
-    }
 
     override val providerType
         get() = QuickLookTarget.TYPE_ALARM
@@ -59,20 +60,16 @@ class AlarmProvider(context: Context, workerHandler: Handler) :
         Log.d(TAG, "start: isEnabled=$isEnabled")
         val client = AxPlatformClient.getInstance()
         client.init(context)
-        client.addListener(listener)
+        client.registerCallback(platformExecutor, callback)
         workerHandler.post {
-            try {
-                val initial = client.getState(AxPlatformClient.KEY_ALARM)
-                val triggerTime = initial.getLong("triggerTime", 0L)
-                if (triggerTime > 0) updateAlarm(triggerTime)
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to read initial alarm state", e)
-            }
+            val triggerTime = client.getState(AxPlatformClient.KEY_ALARM)
+                .getLong("triggerTime", 0L)
+            if (triggerTime > 0) updateAlarm(triggerTime)
         }
     }
 
     override fun shutdown() {
-        AxPlatformClient.getInstance().removeListener(listener)
+        AxPlatformClient.getInstance().unregisterCallback(callback)
     }
 
     private fun updateAlarm(triggerTime: Long) {
@@ -82,21 +79,15 @@ class AlarmProvider(context: Context, workerHandler: Handler) :
             return
         }
 
-        try {
-            val now = System.currentTimeMillis()
-            if (triggerTime - now > SHOW_THRESHOLD_MILLIS || triggerTime <= now) {
-                currentTarget = null
-                notifyUpdate()
-                return
-            }
-
-            currentTarget = buildTarget(triggerTime)
-            notifyUpdate()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse alarm state", e)
+        val now = System.currentTimeMillis()
+        if (triggerTime - now > SHOW_THRESHOLD_MILLIS || triggerTime <= now) {
             currentTarget = null
             notifyUpdate()
+            return
         }
+
+        currentTarget = buildTarget(triggerTime)
+        notifyUpdate()
     }
 
     private fun buildTarget(triggerTime: Long): QuickLookTarget {
