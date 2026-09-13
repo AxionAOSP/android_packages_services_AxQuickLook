@@ -134,8 +134,21 @@ class SmartspacerBridgeProvider(context: Context, workerHandler: Handler) :
                 else -> return null
             }
 
-        val title = if (message.hasTitle()) message.title.text else null
-        val subtitle = if (message.hasSubtitle()) message.subtitle.text else null
+        var title = if (message.hasTitle() && message.title.hasText()) message.title.text else null
+        if (title.isNullOrEmpty() && message.hasTitle() && message.title.formatParamCount > 0) {
+            val param = message.title.getFormatParam(0)
+            if (param.hasText()) {
+                title = param.text
+            }
+        }
+
+        var subtitle = if (message.hasSubtitle() && message.subtitle.hasText()) message.subtitle.text else null
+        if (subtitle.isNullOrEmpty() && message.hasSubtitle() && message.subtitle.formatParamCount > 0) {
+            val param = message.subtitle.getFormatParam(0)
+            if (param.hasText()) {
+                subtitle = param.text
+            }
+        }
 
         if (TextUtils.isEmpty(title) && TextUtils.isEmpty(subtitle)) return null
 

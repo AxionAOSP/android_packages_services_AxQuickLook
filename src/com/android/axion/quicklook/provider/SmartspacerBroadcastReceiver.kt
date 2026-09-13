@@ -29,7 +29,7 @@ class SmartspacerBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_UPDATE_SMARTSPACE = "UPDATE_SMARTSPACE"
-        const val EXTRA_SMARTSPACE_CARD = "SMARTSPACE_CARD"
+        const val ACTION_UPDATE_SMARTSPACE = "com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE"
+        const val EXTRA_SMARTSPACE_CARD = "com.google.android.apps.nexuslauncher.extra.SMARTSPACE_CARD"
     }
 }
