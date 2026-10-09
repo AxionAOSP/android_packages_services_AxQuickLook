@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AxQuickLook</string>
-    <string name="calendar_in_time">%d分钟后</string>
-    <string name="calendar_now">现在</string>
+    <string name="calendar_in_time">再 %d 分鐘</string>
+    <string name="calendar_now">現在</string>
     <string name="calendar_tomorrow">明天</string>
     <string name="calendar_yesterday">昨天</string>
     <string name="quicklook_settings_title">快速查看</string>
     <string name="quicklook_settings_subtitle">Configure smartspace data sources</string>
-    <string name="quicklook_category_sources">数据来源</string>
+    <string name="quicklook_category_sources">資料來源</string>
     <string name="quicklook_category_smartspace">Smartspace</string>
-    <string name="quicklook_weather_title">天气</string>
+    <string name="quicklook_weather_title">天氣</string>
     <string name="quicklook_weather_summary">Current weather conditions from OmniJaws</string>
-    <string name="quicklook_calendar_title">日历</string>
+    <string name="quicklook_calendar_title">日曆</string>
     <string name="quicklook_calendar_summary">Upcoming calendar events</string>
     <string name="quicklook_alarm_title">Next alarm</string>
     <string name="quicklook_alarm_summary">Next scheduled alarm time</string>
