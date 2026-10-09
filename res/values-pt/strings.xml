@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AxQuickLook</string>
+    <string name="calendar_in_time">em %d min</string>
+    <string name="calendar_now">agora</string>
+    <string name="calendar_tomorrow">Amanhã</string>
+    <string name="calendar_yesterday">Ontem</string>
+    <string name="quicklook_settings_title">Olhar rápido</string>
+    <string name="quicklook_settings_subtitle">Configure smartspace data sources</string>
+    <string name="quicklook_category_sources">Fontes de Dados</string>
+    <string name="quicklook_category_smartspace">Smartspace</string>
+    <string name="quicklook_weather_title">Tempo</string>
+    <string name="quicklook_weather_summary">Current weather conditions from OmniJaws</string>
+    <string name="quicklook_calendar_title">Calendário</string>
+    <string name="quicklook_calendar_summary">Upcoming calendar events</string>
+    <string name="quicklook_alarm_title">Next alarm</string>
+    <string name="quicklook_alarm_summary">Next scheduled alarm time</string>
+    <string name="quicklook_media_title">Mídia</string>
+    <string name="quicklook_media_summary">Currently playing media info</string>
+    <string name="quicklook_now_playing_title">Now Playing</string>
+    <string name="quicklook_now_playing_summary">Ambient music recognition from Google</string>
+    <string name="quicklook_google_smartspace_title">Google Smartspace</string>
+    <string name="quicklook_google_smartspace_summary">Weather, timers, sports, and more from Google</string>
+    <string name="quicklook_smartspacer_title">Smartspacer</string>
+    <string name="quicklook_smartspacer_summary">Targets from the Smartspacer app</string>
+</resources>
