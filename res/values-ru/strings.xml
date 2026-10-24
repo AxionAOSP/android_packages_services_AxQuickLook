@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">AxQuickLook</string>
     <string name="calendar_in_time">через %d минут</string>
-    <string name="calendar_now">now</string>
+    <string name="calendar_now">сейчас</string>
     <string name="calendar_tomorrow">Завтра</string>
     <string name="calendar_yesterday">Вчера</string>
     <string name="quicklook_settings_title">Быстрый режим</string>
