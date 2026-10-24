@@ -7,11 +7,11 @@
     <string name="calendar_yesterday">Вчера</string>
     <string name="quicklook_settings_title">Быстрый режим</string>
     <string name="quicklook_settings_subtitle">Настроить источники данных smartspace</string>
-    <string name="quicklook_category_sources">Data Sources</string>
+    <string name="quicklook_category_sources">Источник данных</string>
     <string name="quicklook_category_smartspace">Умное пространство</string>
-    <string name="quicklook_weather_title">Weather</string>
+    <string name="quicklook_weather_title">Погода</string>
     <string name="quicklook_weather_summary">Текущие погодные условия из OmniJaws</string>
-    <string name="quicklook_calendar_title">Calendar</string>
+    <string name="quicklook_calendar_title">Календарь</string>
     <string name="quicklook_calendar_summary">Предстоящие события календаря</string>
     <string name="quicklook_alarm_title">Следующий будильник</string>
     <string name="quicklook_alarm_summary">Время следующего будильника</string>
