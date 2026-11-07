@@ -15,7 +15,7 @@
     <string name="quicklook_calendar_summary">Upcoming calendar events</string>
     <string name="quicklook_alarm_title">Next alarm</string>
     <string name="quicklook_alarm_summary">Next scheduled alarm time</string>
-    <string name="quicklook_media_title">Media</string>
+    <string name="quicklook_media_title">メディア</string>
     <string name="quicklook_media_summary">Currently playing media info</string>
     <string name="quicklook_now_playing_title">Now Playing</string>
     <string name="quicklook_now_playing_summary">Ambient music recognition from Google</string>
