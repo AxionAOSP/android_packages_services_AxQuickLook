@@ -5,7 +5,7 @@
     <string name="calendar_now">now</string>
     <string name="calendar_tomorrow">Tomorrow</string>
     <string name="calendar_yesterday">Yesterday</string>
-    <string name="quicklook_settings_title">QuickLook</string>
+    <string name="quicklook_settings_title">クイックルック</string>
     <string name="quicklook_settings_subtitle">Configure smartspace data sources</string>
     <string name="quicklook_category_sources">Data Sources</string>
     <string name="quicklook_category_smartspace">Smartspace</string>
