@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AxQuickLook</string>
-    <string name="calendar_in_time">in %d min</string>
-    <string name="calendar_now">now</string>
-    <string name="calendar_tomorrow">Tomorrow</string>
-    <string name="calendar_yesterday">Yesterday</string>
+    <string name="calendar_in_time">%d分後</string>
+    <string name="calendar_now">現在</string>
+    <string name="calendar_tomorrow">明日</string>
+    <string name="calendar_yesterday">昨日</string>
     <string name="quicklook_settings_title">クイックルック</string>
     <string name="quicklook_settings_subtitle">スマートスペースのデータソースを構成する</string>
     <string name="quicklook_category_sources">Data Sources</string>
